@@ -2,14 +2,14 @@
 pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+// import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "hardhat/console.sol";
 
 // TODO: Can be enhanced to add more kind of Sodas restricted to onlyOwner.
 
-contract SodasNFT is ERC721, ERC721URIStorage, Ownable {
+contract SodasNFT is ERC721, Ownable {
 	struct Soda {
 		uint score;
 		string cid;
@@ -22,6 +22,7 @@ contract SodasNFT is ERC721, ERC721URIStorage, Ownable {
 	
 	mapping(uint => Soda) public drinks;
 	mapping(address => MySoda) public tokenIdByAddress;
+	mapping(uint => string) public tokenURIs;
 	
 	event Mint(uint tokenId);
 	event Drink(uint tokenId);
@@ -47,7 +48,10 @@ contract SodasNFT is ERC721, ERC721URIStorage, Ownable {
 		uint256 tokenId = _tokenIdCounter.current();
 		_tokenIdCounter.increment();
 		_safeMint(msg.sender, tokenId);
-		_setTokenURI(tokenId, string.concat("http://ipfs.io/ipfs/", drinks[index].cid));
+		
+		console.log("Token ID: ", tokenId);
+		console.log("Index: ", index);
+		tokenURIs[tokenId] = string.concat("http://ipfs.io/ipfs/", drinks[index].cid);
 		tokenIdByAddress[msg.sender].tokenId = tokenId;
 		tokenIdByAddress[msg.sender].index = index;
 		
@@ -86,19 +90,19 @@ contract SodasNFT is ERC721, ERC721URIStorage, Ownable {
 
 	function _burn(
 			uint256 tokenId
-	) internal override(ERC721, ERC721URIStorage) {
-			super._burn(tokenId);
+	) internal override(ERC721) {
+		super._burn(tokenId);
 	}
 
 	function tokenURI(
 			uint256 tokenId
-	) public view override(ERC721, ERC721URIStorage) returns (string memory) {
+	) public view override(ERC721) returns (string memory) {
 			return super.tokenURI(tokenId);
 	}
 
 	function supportsInterface(
 			bytes4 interfaceId
-	) public view override(ERC721, ERC721URIStorage) returns (bool) {
+	) public view override(ERC721) returns (bool) {
 			return super.supportsInterface(interfaceId);
 	}
 }

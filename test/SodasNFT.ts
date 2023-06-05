@@ -62,8 +62,8 @@ describe("SodasNFT", function () {
 			
 			expect(await contract.balanceOf(account1.address)).to.equal(1);
 			expect(await contract.balanceOf(owner.address)).to.equal(1);
-			expect(await contract.tokenURI(1)).to.contains(cids[soda1]);
-			expect(await contract.tokenURI(2)).to.contains(cids[soda2]);
+			expect(await contract.tokenURIs(1)).to.contains(cids[soda1]);
+			expect(await contract.tokenURIs(2)).to.contains(cids[soda2]);
 		});
 		
 		it("reject if already have sodas", async () => {
