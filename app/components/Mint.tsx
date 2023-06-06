@@ -19,16 +19,12 @@ const Mint = (props: MintProps) => {
   } = props;
 
   return (
-    <>
-      {isAllowedToMint && (
-        <Button
-          disabled={ mintIsLoading || mintTxIsLoading}
-          onClick={handleMintButton}
-        >
-          {mintIsLoading || mintTxIsLoading ? "Minting..." : "Mint"}
-        </Button>
-      )}
-    </>
+		<Button
+			disabled={ mintIsLoading || mintTxIsLoading}
+			onClick={handleMintButton}
+		>
+			{mintIsLoading || mintTxIsLoading ? "Minting..." : "Mint"}
+		</Button>
   );
 };
 

@@ -1,5 +1,7 @@
 import React from "react";
 import { Button, Col, Image, Row } from "react-bootstrap";
+import SodaImage from "./SodaImage";
+import useTokenInfo from "../hooks/useTokenInfo";
 
 interface DrinkProps {
   metadata: { name: string; image: string } | undefined;
@@ -9,43 +11,43 @@ interface DrinkProps {
   drinkTxIsLoading: boolean;
   handleDrinkButton: () => void;
   drinkTxIsSuccess: boolean;
+	abi: any;
+	address: `0x${string}` | undefined
 }
 
 const Drink = (props: DrinkProps) => {
   const {
-    metadata,
+    // metadata,
     isAllowedToDrink,
     drink,
     drinkIsLoading,
     drinkTxIsLoading,
     drinkTxIsSuccess,
     handleDrinkButton,
+		abi, address
   } = props;
+	
+  const { tokenId, tokenIndex, tokenUri, metadata } = useTokenInfo(
+    abi,
+    address,
+    isAllowedToDrink,
+  );
 
   return (
-    <>
-      {metadata && isAllowedToDrink && (
-        <Row className="align-items-center">
-          <Col xs="6">
-            <Image
-              rounded
-              src={`https://ipfs.io/ipfs/${metadata.image}`}
-              fluid
-            />
-          </Col>
-          <Col xs="6">
-            <h4>{metadata.name}</h4>
-            <Button
-              disabled={!drink || drinkIsLoading || drinkTxIsLoading}
-              onClick={() => handleDrinkButton()}
-            >
-              Drink
-            </Button>
-            {drinkTxIsSuccess && <h4>How was the soda ?</h4>}
-          </Col>
-        </Row>
-      )}
-    </>
+		<Row className="align-items-center">
+			<Col xs="6">
+				{metadata && <SodaImage src={`https://ipfs.io/ipfs/${metadata.image}`} />}
+			</Col>
+			<Col xs="6">
+				<h4>{metadata?.name}</h4>
+				<Button
+					disabled={!drink || drinkIsLoading || drinkTxIsLoading}
+					onClick={() => handleDrinkButton()}
+				>
+					Drink
+				</Button>
+			</Col>
+		</Row>
   );
 };
 

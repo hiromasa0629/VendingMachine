@@ -14,7 +14,6 @@ import { InferGetServerSidePropsType } from "next";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import useMint from "../hooks/useMint";
-import { config } from "../config";
 import Mint from "../components/Mint";
 import useDrink from "../hooks/useDrink";
 import useTokenInfo from "../hooks/useTokenInfo";
@@ -83,11 +82,11 @@ const Home = ({
 	
 	// console.log(tokenId, tokenIndex);
 
-  useEffect(() => {
-    if (mintIsError) toast(mintError?.name, { type: "error" });
-    if (drinkIsError) toast(drinkError?.name, { type: "error" });
-		if (reviewIsError) toast(reviewError?.name, { type: "error" });
-  }, [mintIsError, drinkIsError, reviewIsError]);
+  // useEffect(() => {
+  //   if (mintIsError) toast(mintError?.name, { type: "error" });
+  //   if (drinkIsError) toast(drinkError?.name, { type: "error" });
+	// 	if (reviewIsError) toast(reviewError?.name, { type: "error" });
+  // }, [mintIsError, drinkIsError, reviewIsError]);
 
 	useEffect(() => {
 		if (!isAllowedToMint) refetchIsAllowedToDrink();
@@ -107,38 +106,44 @@ const Home = ({
             <Card>
               <Card.Header>Soda</Card.Header>
               <Card.Body>
-                <Mint
-                  {...{
-                    isAllowedToMint,
-                    mint,
-                    mintIsLoading,
-                    mintTxIsLoading,
-                    handleMintButton,
-                  }}
-                />
-								<Drink
-									{...{
-										metadata,
-										isAllowedToDrink,
-										drink,
-										drinkIsLoading,
-										drinkTxIsLoading,
-										drinkTxIsSuccess,
-										handleDrinkButton
-									}}
-								/>
-								<Review 
-									{...{
-										metadata,
-										isAllowedToReview,
-										review,
-										reviewIsLoading,
-										reviewTxIsLoading,
-										reviewTxIsSuccess,
-										handleReviewButton,
-										setRes
-									}}
-								/>
+								{isAllowedToMint && (
+									<Mint
+										{...{
+											isAllowedToMint,
+											mint,
+											mintIsLoading,
+											mintTxIsLoading,
+											handleMintButton,
+										}}
+									/>
+								)}
+								{isAllowedToDrink && (
+									<Drink
+										{...{
+											metadata,
+											isAllowedToDrink,
+											drink,
+											drinkIsLoading,
+											drinkTxIsLoading,
+											drinkTxIsSuccess,
+											handleDrinkButton
+										}}
+									/>
+								)}
+								{isAllowedToReview && (
+									<Review 
+										{...{
+											metadata,
+											isAllowedToReview,
+											review,
+											reviewIsLoading,
+											reviewTxIsLoading,
+											reviewTxIsSuccess,
+											handleReviewButton,
+											setRes
+										}}
+									/>
+								)}
               </Card.Body>
             </Card>
           </Col>

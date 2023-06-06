@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 
 const useDrink = (abi: any, address: `0x${string}` | undefined) => {
 	const [isAllowedToDrink, setIsAllowedToDrink] = useState<boolean>(false);
+	const [txHash, setTxHash] = useState<`0x${string}` | undefined>();
 	
   const { data: _isAllowedToDrink = false, refetch: refetchIsAllowedToDrink } = useContractRead({
     address: config.ca,
@@ -25,28 +26,28 @@ const useDrink = (abi: any, address: `0x${string}` | undefined) => {
 		drink?.();
 	}
 
-  const { config: drinkConfig } = usePrepareContractWrite({
-    address: config.ca,
-    abi,
-    functionName: "drink",
-    enabled: isAllowedToDrink,
-  });
-
   const {
     data,
     write: drink,
     error: drinkError,
     isError: drinkIsError,
     isLoading: drinkIsLoading,
-  } = useContractWrite(drinkConfig);
+  } = useContractWrite({
+		address: config.ca,
+		abi: abi,
+		functionName: "drink",
+		onSuccess: (data, variables, context) => setTxHash(data.hash),
+		onError: (error, variables, context) => toast.error(error.name)
+	});
 
   const { isLoading: drinkTxIsLoading, isSuccess: drinkTxIsSuccess } =
     useWaitForTransaction({
-      hash: data?.hash,
+      hash: txHash,
 			enabled: isAllowedToDrink && !!data,
 			onSuccess: async (data) => {
 				toast("How was the soda ?", { type: "success" })
 				await refetchIsAllowedToDrink();
+				setTxHash(undefined);
 			}
     });
 

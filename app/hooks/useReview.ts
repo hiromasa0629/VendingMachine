@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 const useReview = (abi: any, address: `0x${string}` | undefined) => {
 	const [res, setRes] = useState<boolean>(true);
 	const [isAllowedToReview, setIsAllowedToReview] = useState<boolean>(false);
+	const [txHash, setTxHash] = useState<`0x${string}` | undefined>();
 	
   const { data: _isAllowedToReview = false, refetch: refetchIsAllowedToReview } = useContractRead({
     address: config.ca,
@@ -22,16 +23,8 @@ const useReview = (abi: any, address: `0x${string}` | undefined) => {
   });
 
 	const handleReviewButton = () => {
-		review?.();
+		review?.({ args: [res] });
 	}
-
-  const { config: reviewConfig } = usePrepareContractWrite({
-    address: config.ca,
-    abi,
-    functionName: "review",
-    enabled: isAllowedToReview,
-		args: [res]
-  });
 
   const {
     data,
@@ -39,15 +32,22 @@ const useReview = (abi: any, address: `0x${string}` | undefined) => {
     error: reviewError,
     isError: reviewIsError,
     isLoading: reviewIsLoading,
-  } = useContractWrite(reviewConfig);
+  } = useContractWrite({
+		address: config.ca,
+		abi,
+		functionName: "review",
+		onSuccess: (data, variables, context) => setTxHash(data.hash),
+		onError: (error, variables, context) => toast.error(error.name)
+	});
 
   const { isLoading: reviewTxIsLoading, isSuccess: reviewTxIsSuccess } =
     useWaitForTransaction({
-      hash: data?.hash,
+      hash: txHash,
 			enabled: isAllowedToReview && !!data,
 			onSuccess: async (data) => {
 				toast("Thanks for the review!", { type: "success" })
 				await refetchIsAllowedToReview();
+				setTxHash(undefined);
 			}
     });
 
