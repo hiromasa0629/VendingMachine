@@ -51,7 +51,7 @@ contract SodasNFT is ERC721, Ownable {
 		
 		console.log("Token ID: ", tokenId);
 		console.log("Index: ", index);
-		tokenURIs[tokenId] = string.concat("http://ipfs.io/ipfs/", drinks[index].cid);
+		tokenURIs[tokenId] = string.concat("https://ipfs.io/ipfs/", drinks[index].cid);
 		tokenIdByAddress[msg.sender].tokenId = tokenId;
 		tokenIdByAddress[msg.sender].index = index;
 		
