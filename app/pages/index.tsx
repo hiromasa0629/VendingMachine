@@ -1,48 +1,21 @@
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import {
   useAccount,
-  useContractRead,
-  useContractWrite,
-  usePrepareContractWrite,
-  useWaitForTransaction,
 } from "wagmi";
-import { Button, Card, Col, Container, Image, Row } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 import Head from "next/head";
 import Header from "../components/Header";
 import fs from "fs";
 import { InferGetServerSidePropsType } from "next";
-import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import useMint from "../hooks/useMint";
-import Mint from "../components/Mint";
-import useDrink from "../hooks/useDrink";
-import useTokenInfo from "../hooks/useTokenInfo";
-import Drink from "../components/Drink";
-import useReview from "../hooks/useReview";
-import Review from "../components/Review";
-import dynamic from "next/dynamic";
-import { useAlchemySdk } from "../providers/AlchemySdkProvider";
-import { Wallet, ethers } from "ethers";
-import {
-  AlchemyProvider,
-  Contract,
-  EventFilter,
-  Network,
-  Utils,
-} from "alchemy-sdk";
 import { config } from "../config";
-import useActionHistory from "../hooks/useActionHistory";
 import Rack from "../components/Rack";
 import Histories from "../components/Histories";
 import Score from "../components/Score";
 import useScores from "../hooks/useScores";
 
 export const getServerSideProps = async () => {
-  const { abi } = JSON.parse(
-    fs.readFileSync("artifacts/contracts/SodasNFT.sol/SodasNFT.json", "utf8")
+  const abi = JSON.parse(
+    fs.readFileSync("abi/SodasNFT.json", "utf8")
   );
-
-  const contract = new Contract(config.ca, abi);
 
   return {
     props: { abi },
