@@ -24,9 +24,9 @@ contract SodasNFT is ERC721, Ownable {
 	mapping(address => MySoda) public tokenIdByAddress;
 	mapping(uint => string) public tokenURIs;
 	
-	event Mint(uint tokenId);
-	event Drink(uint tokenId);
-	event Review(uint index);
+	event Mint(address from, uint index);
+	event Drink(address from, uint index);
+	event Review(address from, uint index, bool res);
 
 	using Counters for Counters.Counter;
 
@@ -55,23 +55,32 @@ contract SodasNFT is ERC721, Ownable {
 		tokenIdByAddress[msg.sender].tokenId = tokenId;
 		tokenIdByAddress[msg.sender].index = index;
 		
-		emit Mint(tokenId);
+		emit Mint(msg.sender, index);
 	}
 	
 	function drink() public {
 		require(isAllowedToDrink(msg.sender));
 		_burn(tokenIdByAddress[msg.sender].tokenId);
 		
-		emit Drink(tokenIdByAddress[msg.sender].tokenId);
+		emit Drink(msg.sender, tokenIdByAddress[msg.sender].index);
 	}
 	
 	function review(bool res) public {
 		require(isAllowedToReview(msg.sender));
 		tokenIdByAddress[msg.sender].tokenId = 0;
 		drinks[tokenIdByAddress[msg.sender].index].score += res ? 1 : 0;
-		emit Review(tokenIdByAddress[msg.sender].index);
 		
+		emit Review(msg.sender, tokenIdByAddress[msg.sender].index, res);
 		delete tokenIdByAddress[msg.sender];
+	}
+	
+	function scores() external view returns (uint[10] memory) {
+		uint[10] memory res;
+		
+		for (uint i = 0; i < 10; i++) {
+			res[i] = drinks[i].score;
+		}
+		return res;
 	}
 	
 	function isAllowedToMint(address sender) public view returns (bool) {
