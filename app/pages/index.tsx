@@ -11,10 +11,12 @@ import Rack from "../components/Rack";
 import Histories from "../components/Histories";
 import Score from "../components/Score";
 import useScores from "../hooks/useScores";
+import path from "path";
 
 export const getServerSideProps = async () => {
+	const abiDir = path.resolve(process.cwd(), "abi");
   const abi = JSON.parse(
-    fs.readFileSync("abi/SodasNFT.json", "utf8")
+    fs.readFileSync(path.join(abiDir, "SodasNFT.json"), "utf8")
   );
 
   return {
