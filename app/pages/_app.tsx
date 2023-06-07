@@ -8,9 +8,14 @@ import { sepolia, hardhat } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { ToastContainer } from 'react-toastify';
+import { ReactNode } from 'react';
+import { AlchemyProvider } from 'alchemy-sdk';
+import AlchemySdkProvider from '../providers/AlchemySdkProvider';
+
+
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [hardhat],
+  [sepolia],
   [publicProvider(), alchemyProvider({ apiKey: process.env.ALCHEMY_SEPOLIA_API_KEY! })]
 );
 
@@ -31,8 +36,10 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <WagmiConfig config={wagmiConfig}>
       <RainbowKitProvider chains={chains} coolMode>
-				<ToastContainer />
-        <Component {...pageProps} />
+				<AlchemySdkProvider>
+					<ToastContainer />
+					<Component {...pageProps} />
+				</AlchemySdkProvider>
       </RainbowKitProvider>
     </WagmiConfig>
   );

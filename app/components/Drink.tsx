@@ -17,7 +17,7 @@ interface DrinkProps {
 
 const Drink = (props: DrinkProps) => {
   const {
-    // metadata,
+    metadata,
     isAllowedToDrink,
     drink,
     drinkIsLoading,
@@ -27,11 +27,7 @@ const Drink = (props: DrinkProps) => {
 		abi, address
   } = props;
 	
-  const { tokenId, tokenIndex, tokenUri, metadata } = useTokenInfo(
-    abi,
-    address,
-    isAllowedToDrink,
-  );
+
 
   return (
 		<Row className="align-items-center">

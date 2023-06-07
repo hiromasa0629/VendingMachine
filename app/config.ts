@@ -1,3 +1,3 @@
 export const config = {
-  ca: "0x5FbDB2315678afecb367f032d93F642f64180aa3" as `0x${string}`,
+  ca: "0x82D504BFFc82Be753678b876947cada6FcB85eE7" as `0x${string}`,
 };

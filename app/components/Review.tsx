@@ -32,7 +32,7 @@ const Review = (props: ReviewProps) => {
 			</Col>
 			<Col xs="6">
 				<h4>{metadata?.name}</h4>
-				<span>How was your soda, rate it</span>
+				<span>Rate your soda</span>
 				<Form>
 					<Form.Check
 						type={'radio'}

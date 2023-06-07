@@ -21,11 +21,29 @@ import Drink from "../components/Drink";
 import useReview from "../hooks/useReview";
 import Review from "../components/Review";
 import dynamic from "next/dynamic";
+import { useAlchemySdk } from "../providers/AlchemySdkProvider";
+import { Wallet, ethers } from "ethers";
+import {
+  AlchemyProvider,
+  Contract,
+  EventFilter,
+  Network,
+  Utils,
+} from "alchemy-sdk";
+import { config } from "../config";
+import useActionHistory from "../hooks/useActionHistory";
+import Rack from "../components/Rack";
+import Histories from "../components/Histories";
+import Score from "../components/Score";
+import useScores from "../hooks/useScores";
 
 export const getServerSideProps = async () => {
   const { abi } = JSON.parse(
     fs.readFileSync("artifacts/contracts/SodasNFT.sol/SodasNFT.json", "utf8")
   );
+
+  const contract = new Contract(config.ca, abi);
+
   return {
     props: { abi },
   };
@@ -35,64 +53,7 @@ const Home = ({
   abi,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { address } = useAccount();
-
-  const {
-    handleMintButton,
-    mint,
-    mintError,
-    mintIsError,
-    mintIsLoading,
-    mintTxIsLoading,
-    mintTxIsSuccess,
-    isAllowedToMint,
-		refetchIsAllowedToMint,
-  } = useMint(abi, address);
-
-  const {
-    isAllowedToDrink,
-    drink,
-    drinkError,
-    drinkIsError,
-    drinkIsLoading,
-    drinkTxIsLoading,
-    drinkTxIsSuccess,
-    handleDrinkButton,
-		refetchIsAllowedToDrink
-  } = useDrink(abi, address);
-	
-	const {
-    isAllowedToReview,
-		review,
-		reviewError,
-		reviewIsError,
-		reviewIsLoading,
-		reviewTxIsLoading,
-		reviewTxIsSuccess,
-		handleReviewButton,
-		setRes,
-		refetchIsAllowedToReview
-	} = useReview(abi, address);
-
-  const { tokenId, tokenIndex, tokenUri, metadata } = useTokenInfo(
-    abi,
-    address,
-    isAllowedToDrink,
-		isAllowedToReview
-  );
-	
-	// console.log(tokenId, tokenIndex);
-
-  // useEffect(() => {
-  //   if (mintIsError) toast(mintError?.name, { type: "error" });
-  //   if (drinkIsError) toast(drinkError?.name, { type: "error" });
-	// 	if (reviewIsError) toast(reviewError?.name, { type: "error" });
-  // }, [mintIsError, drinkIsError, reviewIsError]);
-
-	useEffect(() => {
-		if (!isAllowedToMint) refetchIsAllowedToDrink();
-		if (!isAllowedToDrink) refetchIsAllowedToReview();
-		if (!isAllowedToReview) refetchIsAllowedToMint();
-	}, [isAllowedToDrink, isAllowedToMint, isAllowedToReview])
+  const { scores, setScores } = useScores(abi);
 
   return (
     <div>
@@ -101,51 +62,36 @@ const Home = ({
       </Head>
       <Container className="py-3">
         <Header />
+        <Row className="py-3" style={{ height: 400 }}>
+          <Col xs="4" className="h-100">
+            <Rack abi={abi} address={address} />
+          </Col>
+          <Col xs="8" className="h-100">
+            <Histories setScores={setScores} />
+          </Col>
+        </Row>
         <Row className="py-3">
-          <Col xs="6">
-            <Card>
-              <Card.Header>Soda</Card.Header>
-              <Card.Body>
-								{isAllowedToMint && (
-									<Mint
-										{...{
-											isAllowedToMint,
-											mint,
-											mintIsLoading,
-											mintTxIsLoading,
-											handleMintButton,
-										}}
-									/>
-								)}
-								{isAllowedToDrink && (
-									<Drink
-										{...{
-											metadata,
-											isAllowedToDrink,
-											drink,
-											drinkIsLoading,
-											drinkTxIsLoading,
-											drinkTxIsSuccess,
-											handleDrinkButton
-										}}
-									/>
-								)}
-								{isAllowedToReview && (
-									<Review 
-										{...{
-											metadata,
-											isAllowedToReview,
-											review,
-											reviewIsLoading,
-											reviewTxIsLoading,
-											reviewTxIsSuccess,
-											handleReviewButton,
-											setRes
-										}}
-									/>
-								)}
-              </Card.Body>
-            </Card>
+          <Col xs="12">
+            <Score scores={scores} />
+          </Col>
+        </Row>
+        <Row className="py-3 justify-content-center">
+          <Col xs="auto">
+            <a
+              href="https://github.com/hiromasa0629/VendingMachine"
+              target="_blank"
+            >
+              Github
+            </a>
+          </Col>
+          <Col xs="auto">
+            CA:{" "}
+            <a
+              href={`https://sepolia.etherscan.io/address/${config.ca}`}
+              target="_blank"
+            >
+              {config.ca}
+            </a>
           </Col>
         </Row>
       </Container>

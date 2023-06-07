@@ -10,7 +10,7 @@ const useTokenInfo = (
 ) => {
   const [metadata, setMetadata] = useState<{ name: string; image: string }>();
 	const [tokenIdNIndex, setTokenIdNIndex] = useState<BigInt[] | undefined>();
-	const [tokenURI, setTokenURI] = useState<string>()
+	const [tokenURI, setTokenURI] = useState<string>();
 
   const { data: _tokenIdNIndex } = useContractRead({
     address: config.ca,
@@ -37,16 +37,14 @@ const useTokenInfo = (
       queryFn: async () => (await fetch(tokenUri!)).json(),
 			onSuccess: (res) => setMetadata(res),
       enabled: !!tokenUri,
+			retry: true
     });
-	
-	console.log(tokenIdNIndex);
-	console.log(metadata);
 
   return {
     tokenId: tokenIdNIndex?.[0],
     tokenIndex: tokenIdNIndex?.[1],
     tokenUri,
-		metadata
+		metadata,
   };
 };
 
